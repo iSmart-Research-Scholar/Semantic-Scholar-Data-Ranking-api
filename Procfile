@@ -1,1 +1,1 @@
-web: gunicorn ranking.wsgi --log-file -
+web: gunicorn ranking.wsgi --timeout 600 --log-file - 
