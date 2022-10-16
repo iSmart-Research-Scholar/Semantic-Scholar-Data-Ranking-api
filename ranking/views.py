@@ -45,7 +45,7 @@ def ranking(request):
         except:
              dict['pdf_url'] = " "
         try:
-            dict['abstract'] = paper['abstract']
+            dict['abstract'] = (paper['abstract']).replace("Abstract","")
         except:
             dict['abstract'] = " "
         try:
@@ -198,6 +198,9 @@ def authorList(paper):
             dict['id'] = data['authorId']
             dict['full_name'] = data['name']
             dict['author_order'] = i
+            dict['citations'] = data['citationCount']
+            dict['paperCount'] = data['paperCount']
+            dict['hIndex'] = data['hIndex']
             i = i + 1
             authorList.append(dict)
             max += 1
