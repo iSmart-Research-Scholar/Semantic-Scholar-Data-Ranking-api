@@ -16,6 +16,8 @@ sp = spacy.load('en_core_web_sm')
 @api_view(['GET'])
 def ranking(request):
     keywords = request.GET.get('keywords')
+    recent = request.GET.get('recent')
+    c_weight = request.GET.get('citation_weight')
     if keywords is None:
         return HttpResponse("Enter valid keywords")
     researchPapers = papers(keywords)
@@ -26,15 +28,31 @@ def ranking(request):
         authors = paper['authors']
         numberOfAuthors = len(authors)
         author_score = 0
+
+        score1 = None
+        score2 = None
+
+        if recent and ((todays_date.year - paper['year']) < 5):
+            score2 = 0.25
+        else:
+            score2 = 0
+        
+        if c_weight and ((paper['citationCount'] / (todays_date.year - paper['year']))>50):
+            score1 = 0.25
+        else:
+            score1 = 0
+
         if(numberOfAuthors == 0):
             author_score = 0
-        # elif(numberOfAuthors == 1):
         else:
             if 'authorId' in authors[0]:
                 author_score = (authorScore(keywords,authors[0]['authorId']))
+        # elif(numberOfAuthors == 1):
+        
         # else:
         #     if 'authorId' in authors[0] and 'authorId' in authors[1]:
         #         author_score = ((authorScore(keywords,authors[0]['authorId'])) + (authorScore(keywords,authors[1]['authorId']))) / 2
+        
         authorsList = authorList(paper)
         try:
             dict['title'] = paper['title']
@@ -65,7 +83,7 @@ def ranking(request):
         except:
             dict['auhtorScore'] = " "
         try:
-            dict['paperScore'] = (author_score + citation_per_year(paper))
+            dict['paperScore'] = (author_score + citation_per_year(paper) + score1 + score2)
         except:
             dict['paperScore'] = 0
         try:
