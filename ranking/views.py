@@ -26,7 +26,9 @@ def ranking(request):
         authors = paper['authors']
         numberOfAuthors = len(authors)
         author_score = 0
-        if(numberOfAuthors == 1):
+        if(numberOfAuthors == 0):
+            author_score = 0
+        elif(numberOfAuthors == 1):
             author_score = (authorScore(keywords,authors[0]['authorId']))
         else:
             author_score = ((authorScore(keywords,authors[0]['authorId'])) + (authorScore(keywords,authors[1]['authorId']))) / 2
