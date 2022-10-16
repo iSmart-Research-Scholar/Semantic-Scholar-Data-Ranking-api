@@ -21,6 +21,8 @@ def ranking(request):
     sorting_factor = request.GET.get('factor')
     if keywords is None:
         return HttpResponse("Enter valid keywords")
+    if sorting_factor is None:
+        sorting_factor = 'paperScore'
     researchPapers = papers(keywords)
     articles = []
     for paper in researchPapers:
