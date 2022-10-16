@@ -1,0 +1,5 @@
+ranking/__pycache__/
+ranking/migrations/
+.env
+.vscode
+venv/
