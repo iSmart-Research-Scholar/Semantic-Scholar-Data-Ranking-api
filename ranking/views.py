@@ -18,6 +18,7 @@ def ranking(request):
     keywords = request.GET.get('keywords')
     recent = request.GET.get('recent')
     c_weight = request.GET.get('citation_weight')
+    sorting_factor = request.GET.get('factor')
     if keywords is None:
         return HttpResponse("Enter valid keywords")
     researchPapers = papers(keywords)
@@ -33,12 +34,12 @@ def ranking(request):
         score2 = None
 
         if recent and ((todays_date.year - paper['year']) < 5):
-            score2 = 3.25
+            score2 = 300.25
         else:
             score2 = 0
         
         if c_weight and ((paper['citationCount'] / (todays_date.year - paper['year']))>150):
-            score1 = 3.25*((paper['citationCount'] / (todays_date.year - paper['year']))/150)
+            score1 = 300.25*((paper['citationCount'] / (todays_date.year - paper['year']))/150)
         else:
             score1 = 0
 
@@ -104,7 +105,7 @@ def ranking(request):
         
         articles.append(dict)
         
-    articles = sorted(articles, key=itemgetter('paperScore'), reverse=True)
+    articles = sorted(articles, key=itemgetter(sorting_factor), reverse=True)
     return JsonResponse({"articles" : articles})
 
 def citations_per_paper_score(citations, number_of_papers):
