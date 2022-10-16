@@ -28,10 +28,13 @@ def ranking(request):
         author_score = 0
         if(numberOfAuthors == 0):
             author_score = 0
-        elif(numberOfAuthors == 1):
-            author_score = (authorScore(keywords,authors[0]['authorId']))
+        # elif(numberOfAuthors == 1):
         else:
-            author_score = ((authorScore(keywords,authors[0]['authorId'])) + (authorScore(keywords,authors[1]['authorId']))) / 2
+            if 'authorId' in authors[0]:
+                author_score = (authorScore(keywords,authors[0]['authorId']))
+        # else:
+        #     if 'authorId' in authors[0] and 'authorId' in authors[1]:
+        #         author_score = ((authorScore(keywords,authors[0]['authorId'])) + (authorScore(keywords,authors[1]['authorId']))) / 2
         authorsList = authorList(paper)
         try:
             dict['title'] = paper['title']
@@ -181,20 +184,23 @@ def influential_citation_count(paper):
 def authorList(paper):
     authors = paper['authors']
     authorList = []
+    max = 0
     i = 1;
     for author in authors:
-        dict = {}
-        data = authorJson(author['authorId'])
-        try:
-            dict['affiliation'] = data['affiliations'][0]
-        except:
-            dict['affiliation'] = " "
-        dict['authorUrl'] = data['url']
-        dict['id'] = data['authorId']
-        dict['full_name'] = data['name']
-        dict['author_order'] = i
-        i = i + 1
-        authorList.append(dict)
+        if(max < 2):
+            dict = {}
+            data = authorJson(author['authorId'])
+            try:
+                dict['affiliation'] = data['affiliations'][0]
+            except:
+                dict['affiliation'] = " "
+            dict['authorUrl'] = data['url']
+            dict['id'] = data['authorId']
+            dict['full_name'] = data['name']
+            dict['author_order'] = i
+            i = i + 1
+            authorList.append(dict)
+            max += 1
     
     return authorList
     
@@ -209,5 +215,5 @@ def citation_per_year(paper):
 def papers(keywords):
     tokens = keywords.split(" ")
     tokenString = '+'.join(tokens)
-    URL = "https://api.semanticscholar.org/graph/v1/paper/search?query=" + tokenString + "&offset=10&limit=10&fields=title,url,authors,abstract,year,referenceCount,citationCount,influentialCitationCount,journal,publicationDate"
+    URL = "https://api.semanticscholar.org/graph/v1/paper/search?query=" + tokenString + "&offset=10&limit=5&fields=title,url,authors,abstract,year,referenceCount,citationCount,influentialCitationCount,journal,publicationDate"
     return ((requests.get(url = URL )).json()['data'])
