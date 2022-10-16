@@ -33,12 +33,12 @@ def ranking(request):
         score2 = None
 
         if recent and ((todays_date.year - paper['year']) < 5):
-            score2 = 0.25
+            score2 = 3.25
         else:
             score2 = 0
         
-        if c_weight and ((paper['citationCount'] / (todays_date.year - paper['year']))>50):
-            score1 = 0.25
+        if c_weight and ((paper['citationCount'] / (todays_date.year - paper['year']))>150):
+            score1 = 3.25*((paper['citationCount'] / (todays_date.year - paper['year']))/150)
         else:
             score1 = 0
 
