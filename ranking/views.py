@@ -71,7 +71,7 @@ def ranking(request):
             dict['sentiment_analysis'] = sentiment_analysis(dict['abstract'])
         except:
             dict['abstract'] = " "
-            dict['sentiment_analysis'] = " "
+            dict['sentiment_analysis'] = "Neutral"
         try:
             dict['publication_year'] = paper['year']
         except:
@@ -115,7 +115,13 @@ def ranking(request):
 
 def sentiment_analysis(abstract):
     sid_obj= SentimentIntensityAnalyzer()
-    return sid_obj.polarity_scores(abstract)['compound']
+    val = sid_obj.polarity_scores(abstract)['compound']
+    if val > 0.0:
+        return "Positive"
+    elif val == 0.0:
+        return "Neutral"
+    else:
+        return "Negative"
 
 def citations_per_paper_score(citations, number_of_papers):
     
