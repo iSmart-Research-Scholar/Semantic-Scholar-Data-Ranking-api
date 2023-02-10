@@ -8,6 +8,7 @@ import threading
 import re
 import spacy
 from datetime import date
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from operator import itemgetter
 
 todays_date = date.today()
@@ -67,8 +68,10 @@ def ranking(request):
              dict['pdf_url'] = " "
         try:
             dict['abstract'] = (paper['abstract']).replace("Abstract","")
+            dict['sentiment_analysis'] = sentiment_analysis(dict['abstract'])
         except:
             dict['abstract'] = " "
+            dict['sentiment_analysis'] = " "
         try:
             dict['publication_year'] = paper['year']
         except:
@@ -109,6 +112,10 @@ def ranking(request):
         
     articles = sorted(articles, key=itemgetter(sorting_factor), reverse=True)
     return JsonResponse({"articles" : articles})
+
+def sentiment_analysis(abstract):
+    sid_obj= SentimentIntensityAnalyzer()
+    return sid_obj.polarity_scores(abstract)['compound']
 
 def citations_per_paper_score(citations, number_of_papers):
     
